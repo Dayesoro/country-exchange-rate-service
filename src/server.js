@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const { testConnection } = require('./config/database');
 require('dotenv').config();
 
 const app = express();
@@ -16,6 +17,10 @@ app.get('/health', (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+app.listen(PORT, async () => {
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
+    console.log(`📊 Health check: http://localhost:${PORT}/health`);
+  
+  
+  await testConnection();
 });
