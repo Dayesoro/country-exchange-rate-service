@@ -5,3 +5,4 @@ cache/
 .DS_Store
 directions-context.md
 Task.md
+test-api.js
