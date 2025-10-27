@@ -13,7 +13,7 @@ CREATE TABLE countries (
   exchange_rate DECIMAL(15, 6),
   estimated_gdp DECIMAL(20, 2),
   flag_url VARCHAR(500),
-  last_refreshed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  last_refreshed_at TIMESTAMP NULL,
   INDEX idx_region (region),
   INDEX idx_currency (currency_code)
 );
