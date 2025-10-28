@@ -184,6 +184,16 @@ async function getStatus() {
   };
 }
 
+
+/**
+ * Delete a country by name (case-insensitive)
+ */
+async function deleteCountry(name) {
+  const query = 'DELETE FROM countries WHERE LOWER(name) = LOWER(?)';
+  const [result] = await pool.execute(query, [name]);
+  return result.affectedRows; // Returns number of rows deleted (0 or 1)
+}
+
 module.exports = {
   countryExists,
   insertCountry,
@@ -193,5 +203,6 @@ module.exports = {
   updateMetadata,
   getAllCountries,    
   getCountryByName, 
-  getStatus
+  getStatus,
+  deleteCountry
 };

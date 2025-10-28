@@ -1,6 +1,13 @@
 const { fetchCountries, fetchExchangeRates } = require('../services/externalApi');
 const { processCountries } = require('../services/countryService');
-const { upsertCountry, updateMetadata, getAllCountries: getAllCountriesFromDB, getCountryByName: getCountryByNameFromDB, getStatus: getStatusFromDB } = require('../services/databaseService');
+const {
+  upsertCountry,
+  updateMetadata,
+  getAllCountries: getAllCountriesFromDB,
+  getCountryByName: getCountryByNameFromDB,
+  getStatus: getStatusFromDB,
+  deleteCountry: deleteCountryFromDB
+} = require('../services/databaseService');
 
 const refreshCountries = async (req, res) => {
     try {
@@ -129,9 +136,34 @@ const getStatus = async (req, res) => {
     }
 };
 
+const deleteCountry = async (req, res) => {
+    try {
+        
+        const countryName = req.params.name;
+        
+        const deletedRows = await deleteCountryFromDB(countryName);
+        
+        if (deletedRows === 0) {
+            return res.status(404).json({
+                error: 'Country not found'
+            });
+        }
+
+        res.status(200).json({
+            message: 'Country deleted successfully'
+        });
+        
+    } catch (error) {
+        res.status(500).json({
+            error: 'Internal server error'
+        });
+    }
+};
+
 module.exports = {
     refreshCountries,
     getAllCountries,
     getCountryByName,
-    getStatus
+    getStatus,
+    deleteCountry
 };
