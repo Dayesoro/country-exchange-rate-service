@@ -1,6 +1,6 @@
 const { fetchCountries, fetchExchangeRates } = require('../services/externalApi');
 const { processCountries } = require('../services/countryService');
-const { upsertCountry, updateMetadata, getAllCountries: getAllCountriesFromDB } = require('../services/databaseService');
+const { upsertCountry, updateMetadata, getAllCountries: getAllCountriesFromDB, getCountryByName: getCountryByNameFromDB } = require('../services/databaseService');
 
 const refreshCountries = async (req, res) => {
     try {
@@ -92,8 +92,32 @@ const getAllCountries = async (req, res) => {
     }
 };
 
+const getCountryByName = async (req, res) => {
+    try {
+        
+        const countryName = req.params.name;
+        
+        // Get country from database
+        const country = await getCountryByNameFromDB(countryName);
+        
+        if (!country) {
+            return res.status(404).json({
+                error: 'Country not found'
+            });
+        }
+        
+        res.status(200).json(country);
+        
+    } catch (error) {
+        res.status(500).json({
+            error: 'Internal server error'
+        });
+    }
+};
+
 
 module.exports = {
     refreshCountries,
-    getAllCountries
+    getAllCountries,
+    getCountryByName
 };
