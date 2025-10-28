@@ -1,6 +1,6 @@
 const { fetchCountries, fetchExchangeRates } = require('../services/externalApi');
 const { processCountries } = require('../services/countryService');
-const { upsertCountry, updateMetadata, getAllCountries: getAllCountriesFromDB, getCountryByName: getCountryByNameFromDB } = require('../services/databaseService');
+const { upsertCountry, updateMetadata, getAllCountries: getAllCountriesFromDB, getCountryByName: getCountryByNameFromDB, getStatus: getStatusFromDB } = require('../services/databaseService');
 
 const refreshCountries = async (req, res) => {
     try {
@@ -115,9 +115,23 @@ const getCountryByName = async (req, res) => {
     }
 };
 
+const getStatus = async (req, res) => {
+    try {
+        const status = await getStatusFromDB();
+        
+        res.status(200).json(status);
+        
+    } catch (error) {
+        console.error('❌ Error fetching status:', error.message);
+        res.status(500).json({
+            error: 'Internal server error'
+        });
+    }
+};
 
 module.exports = {
     refreshCountries,
     getAllCountries,
-    getCountryByName
+    getCountryByName,
+    getStatus
 };
