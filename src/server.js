@@ -1,12 +1,16 @@
 const express = require('express');
 const cors = require('cors');
 const { testConnection } = require('./config/database');
+const countryRoutes = require('./routes/countryRoutes');
 require('dotenv').config();
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+
+app.use('/countries', countryRoutes);
 
 app.get('/health', (req, res) => {
     res.json({

@@ -80,9 +80,33 @@ async function upsertCountry(countryData) {
   }
 }
 
+/**
+ * Get metadata value by key name
+ */
+async function getMetadata(keyName) {
+  const query = 'SELECT value, updated_at FROM metadata WHERE key_name = ?';
+  const [rows] = await pool.execute(query, [keyName]);
+  return rows.length > 0 ? rows[0] : null;
+}
+
+/**
+ * Update metadata value by key name
+ */
+async function updateMetadata(keyName, value) {
+  const query = `
+    UPDATE metadata 
+    SET value = ?, updated_at = NOW() 
+    WHERE key_name = ?
+  `;
+  const [result] = await pool.execute(query, [value, keyName]);
+  return result.affectedRows;
+}
+
 module.exports = {
   countryExists,
   insertCountry,
   updateCountry,
-  upsertCountry
+  upsertCountry,
+  getMetadata,
+  updateMetadata
 };
