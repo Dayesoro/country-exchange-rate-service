@@ -1,3 +1,4 @@
+const { generateSummaryImage } = require('../services/imageService');
 const { fetchCountries, fetchExchangeRates } = require('../services/externalApi');
 const { processCountries } = require('../services/countryService');
 const {
@@ -11,17 +12,12 @@ const {
 
 const refreshCountries = async (req, res) => {
     try {
-        console.log('🔄 Starting countries refresh...');
-        
         
         const countries = await fetchCountries();
-        console.log(`📊 Fetched ${countries.length} countries`);
         
         const exchangeRate = await fetchExchangeRates();
-        console.log('💰 Fetched exchange rates');
         
         const processedCountries = processCountries(countries, exchangeRate);
-        console.log(`🔄 Processed ${processedCountries.length} countries`);
         
         let successCount = 0;
         let errorCount = 0;
@@ -51,6 +47,14 @@ const refreshCountries = async (req, res) => {
         
         console.log(`✅ Refresh completed: ${successCount} successful, ${errorCount} failed`);
         
+        // Generate summary image after successful refresh
+        try {
+            console.log('🎨 Generating summary image...');
+            await generateSummaryImage(processedCountries, processedCountries.length, timestamp);
+        } catch (imageError) {
+            console.error('⚠️ Image generation failed:', imageError.message);
+            // Don't fail the entire refresh if image generation fails
+        }
     } catch (error) {
         console.error('❌ Refresh failed:', error.message);
         
@@ -160,10 +164,42 @@ const deleteCountry = async (req, res) => {
     }
 };
 
+const getImage = async (req, res) => {
+    try {
+        
+        const fs = require('fs').promises;
+        const path = require('path');
+        
+        const imagePath = path.join(__dirname, '../../cache/summary.png');
+        
+        // Check if image exists
+        try {
+            await fs.access(imagePath);
+            
+            // Serve the image file
+            res.sendFile(imagePath);
+            console.log('✅ Image served successfully');
+            
+        } catch (fileError) {
+            console.log('❌ Image file not found');
+            res.status(404).json({
+                error: 'Summary image not found'
+            });
+        }
+        
+    } catch (error) {
+        console.error('❌ Error serving image:', error.message);
+        res.status(500).json({
+            error: 'Internal server error'
+        });
+    }
+};
+
 module.exports = {
     refreshCountries,
     getAllCountries,
     getCountryByName,
     getStatus,
-    deleteCountry
+    deleteCountry,
+    getImage
 };
