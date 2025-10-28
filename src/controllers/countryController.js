@@ -1,6 +1,6 @@
 const { fetchCountries, fetchExchangeRates } = require('../services/externalApi');
 const { processCountries } = require('../services/countryService');
-const { upsertCountry, updateMetadata } = require('../services/databaseService');
+const { upsertCountry, updateMetadata, getAllCountries: getAllCountriesFromDB } = require('../services/databaseService');
 
 const refreshCountries = async (req, res) => {
     try {
@@ -68,6 +68,32 @@ const refreshCountries = async (req, res) => {
     }
 }
 
+const getAllCountries = async (req, res) => {
+    try {
+        
+        // Extract query parameters
+        const { region, currency, sort } = req.query;
+        
+        // Build filters object
+        const filters = {};
+        if (region) filters.region = region;
+        if (currency) filters.currency = currency;
+        
+        // Get countries from database
+        const countries = await getAllCountriesFromDB(filters, sort);
+        
+        res.status(200).json(countries);
+        
+    } catch (error) {
+        console.error('❌ Error fetching countries:', error.message);
+        res.status(500).json({
+            error: 'Internal server error'
+        });
+    }
+};
+
+
 module.exports = {
-    refreshCountries
+    refreshCountries,
+    getAllCountries
 };
