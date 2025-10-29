@@ -71,9 +71,7 @@ const refreshCountries = async (req, res) => {
             });
         } else {
             res.status(500).json({
-                error: 'Internal server error',
-                message: 'Failed to refresh countries',
-                details: error.message
+                error: 'Internal server error'
             });
         }
     }
