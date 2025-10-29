@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const { testConnection } = require('./config/database');
 const countryRoutes = require('./routes/countryRoutes');
+const { getStatus } = require('./controllers/countryController');
 require('dotenv').config();
 
 const app = express();
@@ -11,6 +12,7 @@ app.use(express.json());
 
 
 app.use('/countries', countryRoutes);
+app.get('/status', getStatus);
 
 app.get('/health', (req, res) => {
     res.json({
